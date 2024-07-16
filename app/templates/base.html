@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title> {% block title %} Finance {% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="shortcut icon" href="https://static-00.iconduck.com/assets.00/finance-app-illustration-1967x2048-w8xe3j7b.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+<div class="container">
+    <nav class="navbar">
+        <a class="navbar-brand" href="{{url_for('home')}}">Finance</a>
+        <div class="navbar-links">
+            {% if session.get('username') %}
+                <a class="nav-item" href="{{ url_for('profile') }}">{{session.get('fullname')}}</a>
+                <a class="nav-item" href="{{ url_for('add_balance') }}">Add Balance</a>
+                <a class="nav-item" href="{{ url_for('show_balance') }}">Show Balance</a>
+                <a class="nav-item" href="{{ url_for('transfer_money') }}">Transfer Money</a>
+                <a class="nav-item" href="{{ url_for('transfer_history') }}">Transfer History</a>
+                <a class="nav-item" href="{{ url_for('delete') }}">Delete Account</a>
+                <a class="nav-item nav-link" href="{{ url_for('logout') }}">log out</a>
+            {% else %}
+                <a class="nav-item" href="{{ url_for('login') }}">Login</a>
+                <a class="nav-item" href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {{category}}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    {% block content %}
+    {% endblock %}
+    <div class="icons">
+        <h4 style="font-size:20px;color: #4a90e2;">Our socials:</h4>
+        <a href="https://t.me/djalilov_mukhammad"><i class="fa-brands fa-telegram fa-beat"></i></a>
+        <a href="https://www.instagram.com/djalilovv_mukhammad?igsh=MW5yN2l4a2ltN25qbw=="><i class="fa-brands fa-instagram fa-beat"></i></a>
+        <a href="https://www.linkedin.com/in/muhammad-jalilov-07b474290?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="fa-brands fa-linkedin fa-beat"></i></a>
+        <a href="https://x.com/djalilov_m?t=EZ6t9fhQ6wfhgEJAj58Kfg&s=09"><i class="fa-brands fa-x-twitter fa-beat"></i></a>
+    </div>
+</div>
+</body>
+</html>

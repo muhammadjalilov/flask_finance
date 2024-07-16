@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}AddBalance{%endblock%}
+{% block content %}
+    <form method="post">
+        <p>{{form.amount.label}} {{form.amount()}}</p>
+        {% if form.amount.errors %}
+            {% for error in form.amount.errors %}
+                <span>{{error}}</span>
+            {%endfor%}
+        {%endif%}
+
+        <p>{{form.submit()}}</p>
+        {{form.hidden_tag()}}
+    </form>
+{%endblock%}

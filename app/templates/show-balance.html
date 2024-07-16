@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}ShowBalance{%endblock%}
+{% block content %}
+<style>
+ .balance::after {
+        content: 'ID:{{ session.get("user_id") }}';
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        padding: 5px 10px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        z-index: 2;
+        color: white;
+        font-size: 0.8em;
+    }
+</style>
+<div class="balance">
+    <div class="balance-text">
+        {% if balance %}
+        Your Balance: {{balance.amount}}
+    {% else %}
+        Your Balance: 0
+    {%endif%}
+    </div>
+</div>
+{%endblock%}

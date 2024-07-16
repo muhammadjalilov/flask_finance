@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Transfer History{% endblock %}
+{% block content %}
+<div>
+    <form method="post">
+        <p>{{form.start_period.label}} {{form.start_period()}}</p>
+        {% if form.start_period.errors %}
+            {% for error in form.start_period.errors %}
+                <span>{{error}}</span>
+            {%endfor%}
+        {%endif%}
+        <p>{{form.end_period.label}} {{form.end_period()}}</p>
+        {% if form.end_period.errors %}
+            {% for error in form.end_period.errors %}
+                <span>{{error}}</span>
+            {%endfor%}
+        {%endif%}
+        <p>{{form.submit()}}</p>
+        {{form.hidden_tag()}}
+    </form>
+</div>
+
+{% if message %}
+    <div style="color:red;">
+        <p>{{ message }}</p>
+    </div>
+{% endif %}
+{% if history %}
+<table class="table">
+    <thead>
+    <tr>
+        <th>Sender ID</th>
+        <th>Receiver ID</th>
+        <th>Amount</th>
+        <th>Timestamp</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for h in history %}
+    <tr>
+        <td>{{ h.sender_id }}</td>
+        <td>{{ h.receiver_id }}</td>
+        <td>{{ h.amount }}</td>
+        <td>{{ h.timestamp }}</td>
+        <td>{{ h.description }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<h2>You have not transferred any money</h2>
+{% endif %}
+{% endblock %}
