@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}
+ForgotPassword
+{% endblock %}
+<h3>Set New Password</h3>
+{% block content %}
+<form method="post">
+    <p>{{form.code.label}} {{form.code()}}</p>
+    {% if form.code.errors %}
+    {% for error in form.code.errors %}
+    <span>{{ error }}</span>
+    {% endfor %}
+    {% endif %}
+    <p>{{form.password.label}} {{form.password()}}</p>
+    {% if form.password.errors %}
+    {% for error in form.password.errors %}
+    <span>{{ error }}</span>
+    {% endfor %}
+    {% endif %}
+
+    <p>{{form.confirm_password.label}} {{form.confirm_password()}}</p>
+    {% if form.confirm_password.errors %}
+    {% for error in form.confirm_password.errors %}
+    <span>{{ error }}</span>
+    {% endfor %}
+    {% endif %}
+
+    <p>{{ form.submit()}}</p>
+    {{ form.hidden_tag() }}
+</form>
+{% endblock %}

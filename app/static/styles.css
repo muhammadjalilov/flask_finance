@@ -103,6 +103,11 @@ form input, form textarea, form select {
     font-size: 16px;
 }
 
+form span {
+    color: red;
+    font-size: 16px;
+}
+
 #submit {
     place-self: center;
     background-color: #4a90e2;
@@ -118,20 +123,24 @@ form input, form textarea, form select {
 #submit:hover {
     background-color: #357ab9;
 }
-.icons{
+
+.icons {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
 }
+
 .icons a i {
     font-size: 25px;
     --fa-animation-duration: 3s;
 }
-.icons a i:hover{
+
+.icons a i:hover {
     color: red;
 }
+
 /* For HomePage */
 
 .image-gallery {
@@ -163,6 +172,7 @@ p {
     color: #4a90e2;
     font-weight: bold;
 }
+
 /* Existing styles remain unchanged */
 
 /* Style for the balance display */
@@ -201,6 +211,7 @@ p {
     position: relative;
     z-index: 3;
 }
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -218,6 +229,7 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+
 /* Container for the profile */
 .profile-container {
     max-width: 50%;
@@ -268,3 +280,4 @@ th {
 .profile-container a:hover {
     background-color: #0056b3;
 }
+

@@ -3,9 +3,12 @@ from sqlalchemy import or_
 
 from app import app, bcrypt, db
 from app.decorators import login_required
-from app.forms import RegistrationForm, LoginForm, AddBalance, TransferMoney, TransferHistoryForm, DeleteForm
-from app.models import User, Balance, TransferHistory
+from app.forms import RegistrationForm, LoginForm, AddBalance, TransferMoney, TransferHistoryForm, DeleteForm, \
+    SupportTeam, ForgotPassword, VerifyCodeForm
+from random import randint
+from app.models import User, Balance, TransferHistory, Complains
 from app.utils import save_image
+from app.email import send_notification_code
 
 
 @app.route('/')
@@ -45,7 +48,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if not user.is_deleted:
+        if not user.is_deleted and user.is_active:
             if user and bcrypt.check_password_hash(user.password, form.password.data):
                 session['user_id'] = user.id
                 session['username'] = user.username
@@ -53,10 +56,67 @@ def login():
                 flash(f"Welcome {user.fullname}", 'success')
                 return redirect(url_for('home'))
             else:
-                flash('username or password is wrong', category='danger')
+                user.failure_attempts += 1
+                if user.failure_attempts >= 3:
+                    user.locker()
+                    flash('You blocked due many attempts! To recover account contact with support!', 'danger')
+                    return redirect(url_for('support_team'))
+                else:
+                    flash('username or password is wrong', category='danger')
+                    db.session.commit()
         else:
-            flash('This user deleted! To recover account contact with support!(+998999485775)', category='danger')
+            flash('This user deleted or inactive! To recover account contact with support!', category='danger')
+            return redirect(url_for('support_team'))
+
     return render_template('auth/login.html', form=form)
+
+
+@app.route('/forgot-password', methods=['GET', 'POST'])
+@login_required(required=False)
+def forgot_password():
+    form = ForgotPassword()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data, email=form.email.data).first()
+        if user:
+            code = randint(100000, 999999)
+            session['code'] = code
+            session['user_id'] = user.id
+            try:
+                send_notification_code(code, form.email.data)
+                flash('A verification code has been sent to your email.', 'info')
+            except Exception as e:
+                flash('Failed to send email. Please try again later.', 'danger')
+                return redirect(url_for('forgot_password'))
+
+            return redirect(url_for('verify_code'))
+        else:
+            flash('User not found!', 'danger')
+
+    return render_template('forgot-password.html', form=form)
+
+
+@app.route('/verify-code', methods=['GET', 'POST'])
+def verify_code():
+    form = VerifyCodeForm()
+    if form.validate_on_submit():
+        user_id = session.get('user_id')
+        code = session.get('code')
+        if user_id and code:
+            user = User.query.filter_by(id=user_id).first()
+            if user and code == int(form.code.data):
+                user.password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
+                db.session.commit()
+                flash('Password has been successfully changed', 'success')
+                session.pop('code', None)
+                session.pop('user_id', None)
+                return redirect(url_for('login'))
+            else:
+                flash('Invalid code!', 'danger')
+        else:
+            flash('Session expired. Please try again.', 'danger')
+            return redirect(url_for('forgot_password'))
+
+    return render_template('verify-code.html', form=form)
 
 
 @app.route('/logout')
@@ -230,3 +290,16 @@ def edit():
         flash('Profile successfully edited', 'success')
         return redirect(url_for('register'))
     return render_template('edit.html', form=form, user=user)
+
+
+@app.route('/support-team', methods=['GET', 'POST'])
+def support_team():
+    form = SupportTeam()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        complain = Complains(username=form.username.data, text=form.text.data)
+        db.session.add(complain)
+        db.session.commit()
+        user.reset_activate()
+        return redirect(url_for('login'))
+    return render_template('support-team.html', form=form)
