@@ -4,7 +4,8 @@ from wtforms import StringField, EmailField, PasswordField, SubmitField
 from wtforms.fields.choices import SelectField
 from wtforms.fields.datetime import DateField
 from wtforms.fields.numeric import FloatField, IntegerField
-from wtforms.validators import DataRequired, EqualTo, Length, ValidationError
+from wtforms.fields.simple import TextAreaField
+from wtforms.validators import DataRequired, EqualTo, Length, ValidationError, Email
 
 from app.models import User
 
@@ -78,3 +79,28 @@ class DeleteForm(FlaskForm):
         email = User.query.filter_by(email=email.data).first()
         if not email:
             raise ValidationError('This email not found')
+
+
+class SupportTeam(FlaskForm):
+    username = StringField("Username", validators=[DataRequired(), Length(min=2, max=20)])
+    text = TextAreaField('Complain', validators=[DataRequired()])
+    submit = SubmitField("Send", validators=[DataRequired()])
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+        if not user.username:
+            return ValidationError('User not found!')
+
+
+class ForgotPassword(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Submit')
+
+
+class VerifyCodeForm(FlaskForm):
+    code = StringField('Verification Code', validators=[DataRequired()])
+    password = PasswordField('New Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm New Password',
+                                     validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Verify and Change Password')

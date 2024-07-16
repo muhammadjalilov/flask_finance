@@ -1,5 +1,7 @@
 from uuid import uuid4
 
+from threading import Thread
+
 
 def generate_image_url(name, ext):
     return f"static/images/{uuid4()}_{name}.{ext}"

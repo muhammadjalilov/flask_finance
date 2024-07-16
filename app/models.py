@@ -14,8 +14,21 @@ class User(db.Model):
     password = db.Column(db.String(60), nullable=False)
     image_url = db.Column(db.String(512))
     is_deleted = db.Column(db.Boolean, default=False)
+    is_active = db.Column(db.Boolean, default=True)
+    failure_attempts = db.Column(db.Integer, default=0)
+    code = db.Column(db.BigInteger, default=None)
     balances = db.relationship('Balance', backref='owner', lazy=True)
     transfers = db.relationship('TransferHistory', backref='sender', lazy=True)
+    complains = db.relationship('Complains', backref='sender', lazy=True)
+
+    def locker(self):
+        self.is_active = False
+        db.session.commit()
+
+    def reset_activate(self):
+        self.is_active = True
+        self.failure_attempts = 0
+        db.session.commit()
 
 
 class Balance(db.Model):
@@ -32,3 +45,8 @@ class TransferHistory(db.Model):
     receiver_id = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(120), nullable=True)
 
+
+class Complains(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
+    text = db.Column(db.String(512), nullable=False)
