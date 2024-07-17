@@ -53,7 +53,7 @@ def login():
                 session['user_id'] = user.id
                 session['username'] = user.username
                 session['fullname'] = user.fullname
-                flash(f"Welcome {user.fullname}", 'success')
+                flash(f"Welcome {user.fullname} ", 'success')
                 return redirect(url_for('home'))
             else:
                 user.failure_attempts += 1
